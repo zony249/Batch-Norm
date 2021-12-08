@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     dataset = pd.read_csv("HIGGS_reduced.csv")
     l = dataset.shape[0]
-    new_dataset = dataset.iloc[:int(l*9/10), 1:]
+    new_dataset = dataset.iloc[:int(l*10/10), 1:]
     new_dataset.to_csv("HIGGS_reduced.csv")
     # pass
 
