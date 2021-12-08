@@ -47,10 +47,8 @@ class BatchNorm:
 
         M = Z.shape[0]
 
-        zu = Z - mu
         dZ_norm = dZ_bn * self.g
-        dZ = (np.sum(dZ_norm * Z_norm, axis=0, keepdims=True)/M * np.sum(Z_norm, axis=0, keepdims=True) + M * dZ_norm - np.sum(dZ_norm, axis=0, keepdims=True) - Z_norm * np.sum(dZ_norm * Z_norm, axis=0, keepdims=True)) / (M * np.sqrt(s2 + e)) 
-
+        dZ = (M * dZ_norm + np.sum(dZ_norm * Z_norm, axis=0)*(np.sum(Z_norm, axis=0)/M - Z_norm) - np.sum(dZ_norm, axis=0))/(M * np.sqrt(s2 + e))
         dg = np.sum(dZ_bn * Z_norm, axis=0, keepdims=True)/M
         db = np.sum(dZ_bn, axis=0, keepdims=True)/M
 

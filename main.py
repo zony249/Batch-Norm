@@ -282,9 +282,9 @@ def accuracy_binary(Y_hat, Y):
 
 def h_param_opt(evolution_steps=10, h_param_steps=10):
 
-    decay_l, decay_h = (-5, -11)
-    hidden_l, hidden_h = (100, 1000)
-    lr_l, lr_h = (0, -3)
+    decay_l, decay_h = (-7.48, -8.5)
+    hidden_l, hidden_h = (1000, 1000)
+    lr_l, lr_h = (0.41, 0.41)
 
     X, Y = load_higgs_dataset()
     X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.15)
@@ -303,7 +303,7 @@ def h_param_opt(evolution_steps=10, h_param_steps=10):
         for h_step in range(h_param_steps):
             print(f"Model {h_step + 1}: L2: {decay[h_step]}, learning rate: {alpha[h_step]}, hidden units: {hidden[h_step]}")
             model = Model(input_dims=28, output_dims=1, alpha=alpha[h_step], decay=decay[h_step], N_hidden=hidden[h_step])
-            _, _, _, _, vaa = model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=10, batch_size=1024)
+            _, _, _, _, vaa = model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=20, batch_size=1024)
 
             vaas.append(vaa)
             print("\n")
@@ -345,7 +345,7 @@ if __name__ == "__main__":
     a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
     print(Softmax(a))
 
-    model = Model(28, 1, alpha=1.84, decay=1e-11, N_hidden=204)
+    model = Model(28, 1, alpha=10**0.41, decay=10**-7.9, N_hidden=1000)
 
 
     
@@ -362,6 +362,6 @@ if __name__ == "__main__":
 
     print(X.shape, Y.shape)
 
-    # model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=60, batch_size=4096)
+    model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=60, batch_size=1024)
 
-    h_param_opt(10, 10)
+    # h_param_opt(10, 10)
