@@ -250,18 +250,22 @@ def accuracy_binary(Y_hat, Y):
     return np.sum(Y == Y_hat, axis=0)/Y.shape[0]
 
 
+        
 
-def h_param_opt(evolution_steps=10, h_param_steps=10):
+
+
+
+
+def h_param_opt(X_train, Y_train, X_val, Y_val, evolution_steps=10, h_param_steps=10):
 
     decay_l, decay_h = (-7.39, -7.55)
     hidden_l, hidden_h = (1000, 1000)
     lr_l, lr_h = (-0.21, -0.24)
 
-    X, Y = load_higgs_dataset()
-    X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.15)
-
 
     for evostep in range(evolution_steps):
+
+        print(f"Beginning Hyperparameter Search Generation {evostep+1}/{evolution_steps}")
         
         decay = 10**np.random.uniform(decay_l, decay_h, h_param_steps)
         hidden = np.random.uniform(hidden_l, hidden_h, h_param_steps).astype(np.int32)
@@ -310,29 +314,23 @@ def h_param_opt(evolution_steps=10, h_param_steps=10):
 
 
 
-
-
 if __name__ == "__main__":
-    a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    print(Softmax(a))
 
-    model = Model(28, 1, alpha=10**-0.22, decay=10**-7.4, N_hidden=1000)
+    model = Model(28, 1, alpha=10**-0.21, decay=10**-7.4, N_hidden=1000)
 
+    X, Y = load_higgs_dataset()
 
-    
-    # X, Y, _ = import_dataset("images/")
-
-    dataset = pd.read_csv("HIGGS_reduced.csv", header=None)
-
-    print(dataset)
-    Y = dataset.iloc[:, 1:2].to_numpy().astype(np.float32)
-    X = dataset.iloc[:, 2:].to_numpy().astype(np.float32)
-
-    X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.15)
-
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.15)
+    X_train, X_val, Y_train, Y_val = train_test_split(X_train, Y_train, test_size=0.15)
 
     print(X.shape, Y.shape)
 
-    model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=20, batch_size=1024)
+    # h_param_opt(X_train, Y_train, X_val, Y_val, 10, 10)
 
-    # h_param_opt(10, 10)
+    
+    loss_history, acc_history, val_loss_history, val_acc_history, vaa = model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=20, batch_size=1024)
+
+    np.save("arrays/no_loss_hist", loss_history)
+    np.save("arrays/no_acc_hist", acc_history)
+    np.save("arrays/no_val_loss_hist", val_loss_history)
+    np.save("arrays/no_val_acc_hist", val_acc_history)
