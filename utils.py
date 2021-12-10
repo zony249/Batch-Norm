@@ -4,6 +4,7 @@ from PIL import Image
 import pickle
 import os
 import pandas as pd
+import matplotlib.pyplot as plt
 
 def import_dataset(path="images"):
     
@@ -65,16 +66,54 @@ def load_higgs_dataset():
 
     return X, Y
 
+
+def create_plots():
+    bn_acc_hist = np.load("arrays/bn_acc_hist.npy")
+    bn_val_acc_hist = np.load("arrays/bn_val_acc_hist.npy")
+    no_acc_hist = np.load("arrays/no_acc_hist.npy")
+    no_val_acc_hist = np.load("arrays/no_val_acc_hist.npy")
+
+    bn_loss_hist = np.load("arrays/bn_loss_hist.npy")
+    bn_val_loss_hist = np.load("arrays/bn_val_loss_hist.npy")
+    no_loss_hist = np.load("arrays/no_loss_hist.npy")
+    no_val_loss_hist = np.load("arrays/no_val_loss_hist.npy")
+
+    x = np.arange(1, bn_acc_hist.shape[0] + 1)
+    
+    plt.figure().clear()
+    plt.plot(x, bn_acc_hist, color="orange")
+    plt.plot(x, bn_val_acc_hist, "--", color="orange")
+    plt.plot(x, no_acc_hist, color="blue")
+    plt.plot(x, no_val_acc_hist, "--", color="blue")
+
+    plt.ylim([0.0, 1.0])
+    plt.xlim([0, bn_acc_hist.shape[0] +1])
+    plt.show()
+
+
+    plt.figure().clear()
+    plt.plot(x, bn_loss_hist, color="orange")
+    plt.plot(x, bn_val_loss_hist, "--", color="orange")
+    plt.plot(x, no_loss_hist, color="blue")
+    plt.plot(x, no_val_loss_hist, "--", color="blue")
+
+    plt.ylim([0.0, 0.8])
+    plt.xlim([0, bn_acc_hist.shape[0] +1])
+    plt.show()
+
+    
+
 if __name__ == "__main__":
     # X, Y, class_to_idx = import_dataset()
     # print(X.shape, Y.shape, class_to_idx)
 
     # print(Y)
 
-    dataset = pd.read_csv("HIGGS_reduced.csv")
-    l = dataset.shape[0]
-    new_dataset = dataset.iloc[:int(l*10/10), 1:]
-    new_dataset.to_csv("HIGGS_reduced.csv")
+    # dataset = pd.read_csv("HIGGS_reduced.csv")
+    # l = dataset.shape[0]
+    # new_dataset = dataset.iloc[:int(l*10/10), 1:]
+    # new_dataset.to_csv("HIGGS_reduced.csv")
     # pass
 
+    create_plots()
 
