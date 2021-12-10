@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
+from copy import deepcopy
 
 from utils import *
 from batchnorm import *
@@ -42,6 +43,10 @@ class Model:
         self.v_acc_hist = []
         self.loss_hist = []
         self.v_loss_hist = []
+
+        self.best_val_acc = 0
+        self.best_state = None
+        self.best_epoch = 0
 
         self.train = False
 
@@ -192,6 +197,12 @@ class Model:
                 # keeps track of the history of validation metrics
                 self.v_loss_hist.append(val_loss)
                 self.v_acc_hist.append(val_acc)
+
+                # keeps track of the best performing state
+                if val_acc > self.best_val_acc:
+                    self.best_val_acc = val_acc
+                    self.best_epoch = epoch + 1
+                    self.best_state = deepcopy(self)
             else:
                 print("")
             self.loss_hist.append(avg_loss)
@@ -328,9 +339,17 @@ if __name__ == "__main__":
     # h_param_opt(X_train, Y_train, X_val, Y_val, 10, 10)
 
     
-    loss_history, acc_history, val_loss_history, val_acc_history, vaa = model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=20, batch_size=1024)
+    loss_history, acc_history, val_loss_history, val_acc_history, vaa = model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=10, batch_size=1024)
 
     np.save("arrays/no_loss_hist", loss_history)
     np.save("arrays/no_acc_hist", acc_history)
     np.save("arrays/no_val_loss_hist", val_loss_history)
     np.save("arrays/no_val_acc_hist", val_acc_history)
+
+    Y_pred = model.forward(X_test)
+    acc = accuracy_binary(Y_pred, Y_test)
+    print(f"Accuracy on test set: {acc[0]:.4f}")
+
+    Y_pred_opt = model.best_state.forward(X_test)
+    acc_opt = accuracy_binary(Y_pred_opt, Y_test)
+    print(f"Optimal accuracy of epoch {model.best_epoch} on test set: {acc_opt[0]:.4f}")
