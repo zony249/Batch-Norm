@@ -336,7 +336,9 @@ if __name__ == "__main__":
 
     print(X.shape, Y.shape)
 
-    # h_param_opt(X_train, Y_train, X_val, Y_val, 10, 10)
+    # hyperparameter search. May take all day, so comment this out 
+    # if you simply want to train the model for 10 epochs
+    h_param_opt(X_train, Y_train, X_val, Y_val, 10, 10)
 
     
     loss_history, acc_history, val_loss_history, val_acc_history, vaa = model.fit(X_train, Y_train, X_val=X_val, Y_val=Y_val, epochs=10, batch_size=1024)

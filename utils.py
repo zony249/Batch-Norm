@@ -6,57 +6,6 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def import_dataset(path="images"):
-    
-    count = 0 
-    class_to_idx = {}
-
-    try:
-        X = np.load(path + "/x.npy")
-        Y_hot = np.load(path + "/y.npy")
-        with open(path + "/class_to_idx.pickle", 'rb') as fname:
-            class_to_idx = pickle.load(fname)
-
-        return X, Y_hot, class_to_idx
-    except:
-        os.system("rm images/*.npy images/class_to_idx.pickle")
-        pass
-
-
-    X = []
-    Y = []
-    for e in iglob(path + "/*"):
-        classlabel = e.split("/")[-1]
-        class_to_idx[classlabel] = count
-        
-        for images in iglob(e + "/*"):
-            img = Image.open(images).resize((48, 48)).convert("RGB")
-            img = np.array(img).reshape(-1)
-            print(img.shape)
-            X.append(img)
-            Y.append(count)
-            print(images)
-
-        count += 1
-
-    X = np.array(X)
-    Y = np.array(Y).astype(int)
-    Y_hot = np.zeros((Y.size, len(class_to_idx)))
-    Y_hot[np.arange(Y.size), Y[:]] = 1
-
-    shuffle = np.random.permutation(X.shape[0])
-
-    X = X[shuffle]
-    Y_hot = Y_hot[shuffle]
-
-
-    np.save(path + "/x", X)
-    np.save(path + "/y", Y_hot)
-    with open(path + "/class_to_idx.pickle", 'wb') as fname:
-        pickle.dump(class_to_idx, fname, protocol=pickle.HIGHEST_PROTOCOL)
-
-    return (X, Y_hot, class_to_idx)
-
 
 def load_higgs_dataset():
     dataset = pd.read_csv("HIGGS_reduced.csv", header=None)
@@ -81,25 +30,33 @@ def create_plots():
     x = np.arange(1, bn_acc_hist.shape[0] + 1)
     
     plt.figure().clear()
-    plt.plot(x, bn_acc_hist, color="orange")
-    plt.plot(x, bn_val_acc_hist, "--", color="orange")
-    plt.plot(x, no_acc_hist, color="blue")
-    plt.plot(x, no_val_acc_hist, "--", color="blue")
+    plt.title("BN vs Control Accuracy Plots over 10 Epochs")
+    plt.plot(x, bn_acc_hist, color="orange", label="BN Training Accuracy")
+    plt.plot(x, bn_val_acc_hist, "--", color="orange", label="BN Validation Accuracy")
+    plt.plot(x, no_acc_hist, color="blue", label="Control Training Accuracy")
+    plt.plot(x, no_val_acc_hist, "--", color="blue", label="Control Validation Accuracy")
+    plt.legend()
+    plt.ylabel("Accuracy")
+    plt.xlabel("Epochs")
 
     plt.ylim([0.0, 1.0])
     plt.xlim([0, bn_acc_hist.shape[0] +1])
-    plt.show()
+    plt.savefig("AccHist.png")
 
 
     plt.figure().clear()
-    plt.plot(x, bn_loss_hist, color="orange")
-    plt.plot(x, bn_val_loss_hist, "--", color="orange")
-    plt.plot(x, no_loss_hist, color="blue")
-    plt.plot(x, no_val_loss_hist, "--", color="blue")
+    plt.title("BN vs Control Loss Plots over 10 Epochs")
+    plt.plot(x, bn_loss_hist, color="orange", label="BN Training Loss")
+    plt.plot(x, bn_val_loss_hist, "--", color="orange", label="BN Validation Loss")
+    plt.plot(x, no_loss_hist, color="blue", label="Control Training Loss")
+    plt.plot(x, no_val_loss_hist, "--", color="blue", label="Control Validation Loss")
+    plt.legend()
+    plt.ylabel("Loss")
+    plt.xlabel("Epochs")
 
     plt.ylim([0.0, 0.8])
     plt.xlim([0, bn_acc_hist.shape[0] +1])
-    plt.show()
+    plt.savefig("LossHist.png")
 
     
 
